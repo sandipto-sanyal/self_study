@@ -1,5 +1,6 @@
 # Regex pattern matching
 # match the pattern word1 bla bla bla...(0 to n bla's) word2
+# more examples: https://pythonspot.com/regular-expressions/
 import re
 cleaned_text = 'word1 ball cat dog cow donkey word2'
 re_pattern1 = 'word1\W+(?:\w+\W+){0,5}?word2'
@@ -37,3 +38,25 @@ text = 'Wolves and morning joggers are jogging together'
 tokens = text.split()
 lem_toks = [multiple_lemmatization(word.lower()) for word in tokens]
 print(' '.join(lem_toks)) # Output: wolf and morning jogger be jog together
+
+#----------------------------------------------------------------------------------
+# Decontraction
+import re
+def decontracted(phrase):
+    # specific
+    phrase = re.sub(r"won\'t", "will not", phrase)
+    phrase = re.sub(r"can\'t", "can not", phrase)
+
+    # general
+    phrase = re.sub(r"n\'t", " not", phrase)
+    phrase = re.sub(r"\'re", " are", phrase)
+    phrase = re.sub(r"\'s", " is", phrase)
+    phrase = re.sub(r"\'d", " would", phrase)
+    phrase = re.sub(r"\'ll", " will", phrase)
+    phrase = re.sub(r"\'t", " not", phrase)
+    phrase = re.sub(r"\'ve", " have", phrase)
+    phrase = re.sub(r"\'m", " am", phrase)
+    return phrase
+
+text = 'We\'re heading towards doom'
+print(decontracted(text)) # We are heading towards doom

@@ -58,14 +58,23 @@ def load_glove_vectors(glove_path:str,
     return embeddings_index, embedding_matrix, embedding_dim
 
 if __name__ == '__main__':
-    glove_dir = r'C:\Users\sandipto.sanyal\OneDrive - Accenture\Documents\Study materials\self study\text_summarization\glove.6B.50d.txt'
-    from keras.preprocessing.text import Tokenizer
-    from keras.preprocessing.sequence import pad_sequences
-    corpus = ['This is USD.']
-    tok = Tokenizer()
-    tok.fit_on_texts(corpus)
-    X = tok.texts_to_sequences(corpus)
-    X = pad_sequences(X, maxlen=5, padding='pre',truncating='pre')
-    test_word_index = tok.word_index
-    embeddings_index, embedding_matrix, embedding_dim = load_glove_vectors(glove_dir, test_word_index)
-    print(embeddings_index['bank'])
+    from constants import GLOVE_DIR
+    import numpy as np
+    # from keras.preprocessing.text import Tokenizer
+    # from keras.preprocessing.sequence import pad_sequences
+    # corpus = ['This is USD.']
+    # tok = Tokenizer()
+    # tok.fit_on_texts(corpus)
+    # X = tok.texts_to_sequences(corpus)
+    # X = pad_sequences(X, maxlen=5, padding='pre',truncating='pre')
+    # test_word_index = tok.word_index
+    # embeddings_index, embedding_matrix, embedding_dim = load_glove_vectors(GLOVE_DIR, test_word_index)
+    # print('Embedding matrix of dollars:{}'.format(embeddings_index['dollars']))
+    word_index = {'decreased':1,
+                  'decrease':2,
+                  }
+    embeddings_index, embedding_matrix, embedding_dim = load_glove_vectors(GLOVE_DIR, word_index)
+    v1 = embedding_matrix[1]
+    v2 = embedding_matrix[2]
+    similarity = np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2))
+    print('Similarity = {}'.format(similarity))

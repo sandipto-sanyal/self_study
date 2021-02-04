@@ -8,7 +8,7 @@ import pandas as pd
 import sentence_iterator_full_scan
 import numpy as np
 import re
-import multiprocessing as mp
+from multiprocessing import Pool,cpu_count
 
 taxonomy_file_path = r'C:\Users\sandipto.sanyal\Documents\AVS PS\TSA VIP\phase2\data\Intent and Guidance captures\CRs\taxonomy.csv'
 taxonomy_df = pd.read_csv(taxonomy_file_path,
@@ -39,14 +39,22 @@ def map_sentence_with_stw(row):
 
 training_dataset_path = r'C:\Users\sandipto.sanyal\Documents\AVS PS\TSA VIP\phase2\data\Intent and Guidance captures\CRs\training_data.xlsx'
 training_df = pd.read_excel(training_dataset_path)
+print('Training df loaded ', training_df.shape)
 
 
 def perform_apply_on_df_chunks(chunk_df):
     chunk_df[['stws_found_on_full_scan','number_of_stws']] = chunk_df.apply(map_sentence_with_stw, axis=1)
     return chunk_df
 
-n_processes = 10
-chunks_of_df = np.array_split(training_df.head(100),n_processes)
-p = mp.Pool(n_processes)
-pool_results = p.map(perform_apply_on_df_chunks, chunks_of_df)
-final_df = pd.concat(pool_results)
+def parallelize_dataframe(df, func, n_cores=cpu_count()-3):
+    df_split = np.array_split(df, n_cores)
+    pool = Pool(n_cores)
+    df = pd.concat(pool.map(func, df_split))
+    pool.close()
+    pool.join()
+    return df
+
+final_df = parallelize_dataframe(training_df.head(100),perform_apply_on_df_chunks)
+
+save_path = r'C:\Users\sandipto.sanyal\Documents\AVS PS\TSA VIP\phase2\data\Intent and Guidance captures\CRs\training_data_with_mapped_stw.xlsx'
+final_df.to_excel(save_path, index=False)
